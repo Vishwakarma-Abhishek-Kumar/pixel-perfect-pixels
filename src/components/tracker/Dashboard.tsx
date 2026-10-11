@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, FilterX, Smartphone } from "lucide-react";
+import { Plus, FilterX, Smartphone, Bell, BellRing, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTracker } from "@/hooks/use-tracker";
+import { useReminders } from "@/hooks/use-reminders";
 import { dateKey, progressOf, shiftKey } from "@/lib/tracker";
 import {
   CategoryFilterChips,
@@ -13,6 +15,7 @@ import { ActivityBoard } from "./ActivityBoard";
 import { AddActivityModal } from "./AddActivityModal";
 import { StorageAndInstallModal } from "./StorageAndInstallModal";
 import { WelcomeNameModal } from "./WelcomeNameModal";
+import { RemindersModal } from "./RemindersModal";
 
 export function Dashboard() {
   const tr = useTracker();
@@ -20,6 +23,7 @@ export function Dashboard() {
   const [modal, setModal] = useState(false);
   const [storageModal, setStorageModal] = useState(false);
   const [nameModal, setNameModal] = useState(false);
+  const [remindersModal, setRemindersModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
 
   useEffect(() => setDate(dateKey(new Date())), []);
@@ -35,6 +39,8 @@ export function Dashboard() {
     if (!date) return [];
     return tr.getDay(date);
   }, [tr, date]);
+
+  const reminders = useReminders({ date, activities });
 
   // Compute theme counts for the filter chips
   const themeCounts = useMemo(() => {
@@ -71,6 +77,26 @@ export function Dashboard() {
             date={date}
           />
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            {/* Hourly Task Reminders Button */}
+            <button
+              onClick={() => setRemindersModal(true)}
+              className="flex items-center gap-2 rounded-full border border-border/80 bg-card/80 px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-foreground backdrop-blur-sm transition hover:bg-muted shadow-soft hover:-translate-y-0.5"
+              title="Hourly task reminders until checkout"
+            >
+              {reminders.config.enabled ? (
+                <BellRing className="h-4 w-4 text-accent" />
+              ) : (
+                <Bell className="h-4 w-4 text-muted-foreground" />
+              )}
+              <span>Reminders</span>
+              {reminders.config.enabled && reminders.pendingCount > 0 && (
+                <span className="flex items-center gap-1 rounded-full bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold text-accent">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                  {reminders.pendingCount}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={() => setStorageModal(true)}
               className="flex items-center gap-2 rounded-full border border-border/80 bg-card/80 px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-foreground backdrop-blur-sm transition hover:bg-muted shadow-soft hover:-translate-y-0.5"
@@ -205,6 +231,47 @@ export function Dashboard() {
         onSave={tr.setName}
         onClose={() => setNameModal(false)}
       />
+
+      {/* Hourly Reminders Configuration Modal */}
+      <RemindersModal
+        open={remindersModal}
+        onClose={() => setRemindersModal(false)}
+        reminders={reminders}
+        date={date}
+      />
+
+      {/* Floating In-App Reminder Toast Notification */}
+      <AnimatePresence>
+        {reminders.recentBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-5 right-5 z-50 max-w-sm rounded-2xl border border-accent/40 bg-card/95 p-4 shadow-xl backdrop-blur-md"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent">
+                <BellRing className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs font-bold text-foreground truncate">
+                  {reminders.recentBanner.title}
+                </h4>
+                <p className="mt-0.5 text-xs text-muted-foreground whitespace-pre-line">
+                  {reminders.recentBanner.body}
+                </p>
+              </div>
+              <button
+                onClick={reminders.dismissBanner}
+                className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                aria-label="Dismiss banner"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
