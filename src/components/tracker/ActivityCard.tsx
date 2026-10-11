@@ -1,7 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { DndContext, closestCenter, PointerSensor, TouchSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import { GripHorizontal, Trash2, Sparkles } from "lucide-react";
 import type { Activity, Task } from "@/lib/tracker";
 import { TaskItem } from "./TaskItem";
@@ -44,7 +58,11 @@ export function ActivityCard({ activity, dragHandle, overlay, ...a }: Props) {
   return (
     <div
       className={`theme-${activity.theme} group/card relative overflow-hidden rounded-[1.75rem] border border-border/60 card-surface p-5 transition-shadow duration-500 sm:p-6 ${
-        overlay ? "rotate-2 shadow-lift" : complete ? "shadow-glow" : "shadow-soft hover:shadow-lift"
+        overlay
+          ? "rotate-2 shadow-lift"
+          : complete
+            ? "shadow-glow"
+            : "shadow-soft hover:shadow-lift"
       }`}
     >
       {/* organic decoration */}
@@ -55,21 +73,43 @@ export function ActivityCard({ activity, dragHandle, overlay, ...a }: Props) {
           {activity.icon}
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
-          <h3 className="font-display text-xl font-semibold leading-tight tracking-tight">{activity.title}</h3>
-          {activity.description && <p className="mt-0.5 text-sm text-muted-foreground">{activity.description}</p>}
+          <h3 className="font-display text-xl font-semibold leading-tight tracking-tight">
+            {activity.title}
+          </h3>
+          {activity.description && (
+            <p className="mt-0.5 text-sm text-muted-foreground">{activity.description}</p>
+          )}
         </div>
         <div className="flex shrink-0 items-center">
           {confirm ? (
             <div className="flex items-center gap-1 rounded-full bg-card px-1 py-0.5 shadow-soft">
-              <button onClick={a.onDelete} className="rounded-full px-2.5 py-1 text-xs font-semibold text-destructive hover:bg-muted">Delete</button>
-              <button onClick={() => setConfirm(false)} className="rounded-full px-2.5 py-1 text-xs text-muted-foreground hover:bg-muted">Keep</button>
+              <button
+                onClick={a.onDelete}
+                className="rounded-full px-2.5 py-1 text-xs font-semibold text-destructive hover:bg-muted"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setConfirm(false)}
+                className="rounded-full px-2.5 py-1 text-xs text-muted-foreground hover:bg-muted"
+              >
+                Keep
+              </button>
             </div>
           ) : (
             <>
-              <button onClick={() => setConfirm(true)} aria-label="Delete activity" className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground opacity-100 transition hover:bg-card hover:text-destructive md:opacity-0 md:group-hover/card:opacity-100">
+              <button
+                onClick={() => setConfirm(true)}
+                aria-label="Delete activity"
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground opacity-100 transition hover:bg-card hover:text-destructive md:opacity-0 md:group-hover/card:opacity-100"
+              >
                 <Trash2 className="h-4 w-4" />
               </button>
-              <button {...dragHandle} aria-label="Move activity" className="flex h-9 w-9 cursor-grab touch-none items-center justify-center rounded-xl text-muted-foreground transition hover:bg-card hover:text-foreground active:cursor-grabbing">
+              <button
+                {...dragHandle}
+                aria-label="Move activity"
+                className="flex h-9 w-9 cursor-grab touch-none items-center justify-center rounded-xl text-muted-foreground transition hover:bg-card hover:text-foreground active:cursor-grabbing"
+              >
                 <GripHorizontal className="h-4 w-4" />
               </button>
             </>
@@ -88,12 +128,20 @@ export function ActivityCard({ activity, dragHandle, overlay, ...a }: Props) {
           </span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-card">
-          <motion.div className="h-full rounded-full bg-theme" initial={false} animate={{ width: `${pct}%` }} transition={{ type: "spring", stiffness: 120, damping: 20 }} />
+          <motion.div
+            className="h-full rounded-full bg-theme"
+            initial={false}
+            animate={{ width: `${pct}%` }}
+            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+          />
         </div>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-        <SortableContext items={activity.tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={activity.tasks.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
           <ul className="relative mt-4 -ml-1.5 space-y-0.5">
             {activity.tasks.map((t) => (
               <TaskItem
@@ -113,7 +161,11 @@ export function ActivityCard({ activity, dragHandle, overlay, ...a }: Props) {
       </div>
 
       {complete && (
-        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="relative mt-3 text-center font-display text-sm italic text-theme">
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative mt-3 text-center font-display text-sm italic text-theme"
+        >
           All done here — beautifully.
         </motion.p>
       )}

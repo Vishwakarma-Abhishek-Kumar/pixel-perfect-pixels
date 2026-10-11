@@ -30,12 +30,21 @@ export function AddTaskInput({ onAdd }: { onAdd: (title: string) => void }) {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") submit();
-          if (e.key === "Escape") { setValue(""); setOpen(false); }
+          if (e.key === "Escape") {
+            setValue("");
+            setOpen(false);
+          }
         }}
-        onBlur={() => { if (!value.trim()) setOpen(false); }}
+        onBlur={() => {
+          if (!value.trim()) setOpen(false);
+        }}
         className="min-w-0 flex-1 bg-transparent px-2 py-1.5 text-[15px] outline-none placeholder:text-muted-foreground/70"
       />
-      <button onMouseDown={(e) => e.preventDefault()} onClick={submit} className="rounded-lg bg-theme px-3 py-1.5 text-sm font-semibold text-card">
+      <button
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={submit}
+        className="rounded-lg bg-theme px-3 py-1.5 text-sm font-semibold text-card"
+      >
         Add
       </button>
     </div>

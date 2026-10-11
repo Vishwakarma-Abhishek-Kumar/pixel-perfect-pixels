@@ -1,7 +1,22 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { DndContext, DragOverlay, closestCenter, PointerSensor, TouchSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
-import { SortableContext, arrayMove, useSortable, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import type { Activity, Task } from "@/lib/tracker";
 import { ActivityCard, type CardActions } from "./ActivityCard";
 
@@ -25,15 +40,28 @@ function useColumns() {
   return n;
 }
 
-function SortableCard({ activity, actions, index }: { activity: Activity; actions: CardActions; index: number }) {
-  const { attributes, listeners, setNodeRef, isDragging, isOver } = useSortable({ id: activity.id });
+function SortableCard({
+  activity,
+  actions,
+  index,
+}: {
+  activity: Activity;
+  actions: CardActions;
+  index: number;
+}) {
+  const { attributes, listeners, setNodeRef, isDragging, isOver } = useSortable({
+    id: activity.id,
+  });
   return (
     <motion.div
       ref={setNodeRef}
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: isDragging ? 0.35 : 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.05, 0.3), layout: { type: "spring", stiffness: 300, damping: 30 } }}
+      transition={{
+        delay: Math.min(index * 0.05, 0.3),
+        layout: { type: "spring", stiffness: 300, damping: 30 },
+      }}
       className={`rounded-[1.75rem] ${isOver && !isDragging ? "outline-2 outline-dashed outline-offset-4 outline-ring" : ""}`}
     >
       <ActivityCard activity={activity} dragHandle={{ ...attributes, ...listeners }} {...actions} />
@@ -42,7 +70,13 @@ function SortableCard({ activity, actions, index }: { activity: Activity; action
 }
 
 const noop = () => {};
-const noopActions: CardActions = { onAddTask: noop, onUpdateTask: noop as (t: string, p: Partial<Task>) => void, onRemoveTask: noop, onReorderTasks: noop, onDelete: noop };
+const noopActions: CardActions = {
+  onAddTask: noop,
+  onUpdateTask: noop as (t: string, p: Partial<Task>) => void,
+  onRemoveTask: noop,
+  onReorderTasks: noop,
+  onDelete: noop,
+};
 
 export function ActivityBoard({ activities, onReorder, actionsFor }: Props) {
   const cols = useColumns();
@@ -75,11 +109,19 @@ export function ActivityBoard({ activities, onReorder, actionsFor }: Props) {
       onDragCancel={() => setActiveId(null)}
     >
       <SortableContext items={activities.map((a) => a.id)} strategy={() => null}>
-        <div className="grid items-start gap-5 sm:gap-6" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+        <div
+          className="grid items-start gap-5 sm:gap-6"
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+        >
           {columns.map((col, ci) => (
             <div key={ci} className="flex flex-col gap-5 sm:gap-6">
               {col.map((a) => (
-                <SortableCard key={a.id} activity={a} actions={actionsFor(a.id)} index={activities.indexOf(a)} />
+                <SortableCard
+                  key={a.id}
+                  activity={a}
+                  actions={actionsFor(a.id)}
+                  index={activities.indexOf(a)}
+                />
               ))}
             </div>
           ))}
