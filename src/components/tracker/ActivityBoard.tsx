@@ -54,7 +54,7 @@ export function ActivityBoard({ activities, onReorder, actionsFor }: Props) {
   );
 
   const columns: Activity[][] = Array.from({ length: cols }, () => []);
-  activities.forEach((a, i) => columns[i % cols].push(a));
+  activities.forEach((a, i) => columns[i % cols]!.push(a));
 
   const onDragEnd = (e: DragEndEvent) => {
     setActiveId(null);
