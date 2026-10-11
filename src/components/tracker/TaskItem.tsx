@@ -45,7 +45,7 @@ export function TaskItem({ task, onToggle, onRename, onDelete }: Props) {
           if (!task.completed) setBurst((b) => b + 1);
           onToggle();
         }}
-        aria label={task.completed ? "Mark incomplete" : "Mark complete"}
+        aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
         className="relative flex h-6 w-6 shrink-0 items-center justify-center"
       >
         <motion.span
